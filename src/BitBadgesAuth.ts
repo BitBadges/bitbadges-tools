@@ -77,6 +77,20 @@ export default function BitBadges(
         description?: string;
     }
 ): OAuthConfig<BitBadgesProfile> {
+    const frontendParams: Record<string, any> = {};
+    if (config.expectAttestationsPresentations)
+        frontendParams.expectAttestationsPresentations =
+            config.expectAttestationsPresentations;
+    if (config.ownershipRequirements)
+        frontendParams.ownershipRequirements = JSON.stringify(
+            config.ownershipRequirements
+        );
+    if (config.expectVerifySuccess)
+        frontendParams.expectVerifySuccess = config.expectVerifySuccess;
+    if (config.name) frontendParams.name = config.name;
+    if (config.image) frontendParams.image = config.image;
+    if (config.description) frontendParams.description = config.description;
+
     return {
         id: 'bitbadges',
         name: 'BitBadges',
@@ -85,15 +99,7 @@ export default function BitBadges(
         clientSecret: process.env.BITBADGES_CLIENT_SECRET, // from the provider's dashboard
         authorization: {
             url: `${'https://bitbadges.io/auth/codegen'}`,
-            params: {
-                expectAttestationsPresentations:
-                    config.expectAttestationsPresentations,
-                ownershipRequirements: config.ownershipRequirements,
-                expectVerifySuccess: config.expectVerifySuccess,
-                name: config.name,
-                image: config.image,
-                description: config.description,
-            },
+            params: frontendParams,
         },
         token: {
             url: `${'https://api.bitbadges.io/api/v0/siwbbRequest/fetch'}`,
@@ -107,11 +113,28 @@ export default function BitBadges(
         userinfo: {
             url: 'https://bitbadges.io',
             async request({ tokens }: { tokens: { access_token: string } }) {
-                console.log(tokens);
+                const address = tokens.access_token;
+                //POST request to BitBadges API
+                const res = await fetch(
+                    'https://api.bitbadges.io/api/v0/users',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            accountsToFetch: [{ address }],
+                        }),
+                    }
+                );
+                const accountsResponse = await res.json();
+                const account = accountsResponse.accounts[0];
+
                 return {
-                    name: tokens.access_token,
-                    user_id: tokens.access_token,
-                    address: tokens.access_token,
+                    address: account.address,
+                    chain: account.chain,
+                    id: account.cosmosAddress,
+                    name: account.address,
                 };
             },
         },
