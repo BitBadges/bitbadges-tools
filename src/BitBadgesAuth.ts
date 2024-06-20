@@ -98,11 +98,11 @@ export default function BitBadges(
         clientId: process.env.BITBADGES_CLIENT_ID, // from the provider's dashboard
         clientSecret: process.env.BITBADGES_CLIENT_SECRET, // from the provider's dashboard
         authorization: {
-            url: `${'https://bitbadges.io/auth/codegen'}`,
+            url: `${'https://bitbadges.io/siwbb/authorize'}`,
             params: frontendParams,
         },
         token: {
-            url: `${'https://api.bitbadges.io/api/v0/siwbbRequest/fetch'}`,
+            url: `${'https://api.bitbadges.io/api/v0/siwbb/token'}`,
             params: {
                 options: JSON.stringify({
                     ownershipRequirements: config.ownershipRequirements,
