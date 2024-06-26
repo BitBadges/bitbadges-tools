@@ -1,5 +1,5 @@
 import NextAuth from 'next-auth';
-import BitBadges from './BitBadgesAuth';
+import { BitBadgesNextAuth as BitBadges } from 'bitbadgesjs-sdk';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
