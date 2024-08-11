@@ -9,13 +9,19 @@ export function CalendarAttendeesToolComponent({}: {}) {
 
     const [loading, setLoading] = useState(true);
 
+    const [isLocalDev, setIsLocalDev] = useState(false);
+
+    useEffect(() => {
+        setIsLocalDev(window.location.hostname === 'localhost');
+    }, []);
+
     function getPostMessageFromEvent(event: calendar_v3.Schema$Event) {
         return {
-            id: 'email',
+            pluginId: 'email',
             publicParams: {},
             privateParams: {
                 ids: event.attendees?.map((attendee) => attendee.email) || [],
-                useernames: [],
+                usernames: [],
             },
         };
     }
@@ -82,7 +88,9 @@ export function CalendarAttendeesToolComponent({}: {}) {
 
                                 window.opener.postMessage(
                                     getPostMessageFromEvent(event),
-                                    'https://bitbadges.io'
+                                    isLocalDev
+                                        ? 'http://localhost:3000'
+                                        : 'https://bitbadges.io'
                                 );
                                 window.close();
                             }}
