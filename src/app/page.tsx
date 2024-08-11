@@ -1,6 +1,13 @@
-import { auth, signIn, signOut } from '@/auth';
+import { auth, manualProviders, providers } from '@/auth';
 import { DefaultSession } from 'next-auth';
-import ToolSelectorServer from './ToolSelectorServer';
+import { SignInButton, SignOut } from './SignInsServer';
+import {
+    SignInButton as SignInButtonClient,
+    SignOut as SignOutClient,
+} from './SignInsClient';
+import { cookies } from 'next/headers';
+import ToolSelectorClient from './ToolSelector';
+import Image from 'next/image';
 
 declare module 'next-auth' {
     interface Session extends DefaultSession {
@@ -9,89 +16,29 @@ declare module 'next-auth' {
     }
 }
 
-const defaultClassName = 'blockin-button';
+export async function getAuthStatus() {
+    const session = await auth();
+    const cookieStore = cookies();
 
-function SignOut() {
-    return (
-        <form
-            action={async () => {
-                'use server';
-                await signOut();
-            }}
-        >
-            <button type="submit" className={`${defaultClassName} mb-4 w-full`}>
-                <div className="flex items-center justify-center hover:opacity-80 bg-gray-800 p-4 rounded-lg">
-                    Sign Out
-                </div>
-            </button>
-        </form>
-    );
-}
+    const calendlyToken = cookieStore.get('calendly_token')?.value;
 
-const providers: {
-    id: string;
-    name: string;
-    description: string;
-    logo: string;
-}[] = [
-    // {
-    //     id: 'github',
-    //     name: 'GitHub',
-    //     description: 'Sign in with your GitHub account',
-    //     logo: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
-    // },
-    {
-        id: 'google',
-        name: 'Google',
-        description: 'Sign in with your Google account',
-        //square icon
-        logo: 'https://static-00.iconduck.com/assets.00/google-icon-2048x2048-pks9lbdv.png',
-    },
-    // {
-    //     id: 'calendly',
-    //     name: 'Calendly',
-    //     description: 'Sign in with your Calendly account',
-    //     logo: 'https://static-00.iconduck.com/assets.00/google-icon-2048x2048-pks9lbdv.png',
-    // },
-    // {
-    //     id: 'mailchimp',
-    //     name: 'Mailchimp',
-    //     description: 'Sign in with your Mailchimp account',
-    //     logo: 'https://static-00.iconduck.com/assets.00/google-icon-2048x2048-pks9lbdv.png',
-    // },
-];
-
-function SignInButton({ provider }: { provider: (typeof providers)[number] }) {
-    return (
-        <form
-            action={async () => {
-                'use server';
-                await signIn(provider.id);
-            }}
-        >
-            <button type="submit" className={`${defaultClassName} mb-4 w-full`}>
-                <div className="flex items-center justify-between bg-gray-800 p-4 rounded-lg hover:bg-gray-700 transition-colors">
-                    <div className="flex items-center">
-                        <img
-                            src={provider.logo}
-                            alt={provider.name}
-                            className="w-6 h-6 mr-3"
-                        />
-                        <span>{provider.name}</span>
-                    </div>
-                    <span className="text-sm text-gray-400">
-                        {provider.description}
-                    </span>
-                </div>
-            </button>
-        </form>
-    );
+    return {
+        isAuthenticated: !!session || !!calendlyToken,
+        provider: session?.provider || (calendlyToken ? 'calendly' : null),
+        user:
+            session?.user ||
+            (calendlyToken
+                ? {
+                      name: 'Calendly User',
+                  }
+                : null),
+    };
 }
 
 export default async function Home() {
-    const session = await auth();
-
+    const session = await getAuthStatus();
     const currProvider = providers.find((p) => p.id === session?.provider);
+    const isManualProvider = manualProviders.includes(session?.provider ?? '');
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -101,21 +48,30 @@ export default async function Home() {
                         <h1 className="text-2xl font-bold mb-6 text-center">
                             Sign In
                         </h1>
-                        {providers.map((provider) => (
-                            <SignInButton
-                                key={provider.id}
-                                provider={provider}
-                            />
-                        ))}
+                        {providers.map((provider) =>
+                            manualProviders.includes(provider.id) ? (
+                                <SignInButtonClient
+                                    key={provider.id}
+                                    provider={provider}
+                                />
+                            ) : (
+                                <SignInButton
+                                    key={provider.id}
+                                    provider={provider}
+                                />
+                            )
+                        )}
                     </>
                 ) : (
                     <>
                         <div className="mb-6 p-4 bg-gray-800 rounded-lg shadow-md">
                             <div className="flex items-center justify-center mb-2">
-                                <img
-                                    src={currProvider?.logo}
+                                <Image
+                                    src={currProvider?.logo ?? ''}
                                     alt={`${currProvider?.name} logo`}
                                     className="w-8 h-8 mr-3"
+                                    width={32}
+                                    height={32}
                                 />
                                 <span className="text-xl font-semibold">
                                     {session.user.name ?? ''}
@@ -126,10 +82,10 @@ export default async function Home() {
                             </div>
                         </div>
                         <div className="my-6">
-                            <SignOut />
+                            {isManualProvider ? <SignOutClient /> : <SignOut />}
                         </div>
                         {session.provider && (
-                            <ToolSelectorServer provider={session.provider} />
+                            <ToolSelectorClient provider={session.provider} />
                         )}
                     </>
                 )}

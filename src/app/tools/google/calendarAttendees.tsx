@@ -1,4 +1,4 @@
-import { ItemCard } from '@/app/ToolSelectorClient';
+import { ItemCard } from '@/app/ToolSelector';
 import { calendar_v3 } from 'googleapis';
 import { useEffect, useState } from 'react';
 

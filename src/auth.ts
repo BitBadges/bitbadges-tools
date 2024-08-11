@@ -1,20 +1,39 @@
 import NextAuth, { Session } from 'next-auth';
-import GitHubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
-import MailchimpProvider from 'next-auth/providers/mailchimp';
-import { CalendlyProvider } from './calendlyProvider';
+import StravaProvider from 'next-auth/providers/strava';
+
+//Manual providers are manually implemented instead of using next-auth's built-in providers
+export const manualProviders = ['calendly'];
+
+//Active providers to be displayed on the login page
+export const providers: {
+    id: string;
+    name: string;
+    description: string;
+    logo: string;
+}[] = [
+    {
+        id: 'google',
+        name: 'Google',
+        description: 'Sign in with your Google account',
+        logo: 'https://zapier-images.imgix.net/storage/services/5e4971d60629bca0548ded987b9ddc06.png?auto=format&ixlib=react-9.8.1&fit=crop&q=50&w=60&h=60&dpr=1',
+    },
+    {
+        id: 'calendly',
+        name: 'Calendly',
+        description: 'Sign in with your Calendly account',
+        logo: 'https://zapier-images.imgix.net/storage/services/33464c48a26a29dd29977ffb16bcca53.png?auto=format&ixlib=react-9.8.1&fit=crop&q=50&w=60&h=60&dpr=1',
+    },
+    // {
+    //     id: 'strava',
+    //     name: 'Strava',
+    //     description: 'Sign in with your Strava account',
+    //     logo: 'https://zapier-images.imgix.net/storage/developer/0bff80269156ba892a084e0fcf8eb841.png?auto=format&ixlib=react-9.8.1&fit=crop&q=50&w=60&h=60&dpr=1',
+    // },
+];
 
 const authOptions = {
     providers: [
-        GitHubProvider({
-            clientId: process.env.GITHUB_ID,
-            clientSecret: process.env.GITHUB_SECRET,
-            authorization: {
-                params: {
-                    scope: 'read:user user:email repo',
-                },
-            },
-        }),
         GoogleProvider({
             clientId: process.env.GOOGLE_ID,
             clientSecret: process.env.GOOGLE_SECRET,
@@ -25,11 +44,14 @@ const authOptions = {
                 },
             },
         }),
-        MailchimpProvider,
-        // BitBadges,
-        CalendlyProvider({
-            clientId: process.env.CALENDLY_CLIENT_ID!,
-            clientSecret: process.env.CALENDLY_CLIENT_SECRET!,
+        StravaProvider({
+            clientId: process.env.STRAVA_CLIENT_ID!,
+            clientSecret: process.env.STRAVA_CLIENT_SECRET!,
+            authorization: {
+                params: {
+                    scope: 'activity:read',
+                },
+            },
         }),
     ],
     callbacks: {
@@ -49,8 +71,6 @@ const authOptions = {
             return session;
         },
     },
-
-    //allow doorkeeper to be used as a provider
 };
 
 export const { handlers, signIn, signOut, auth } = NextAuth(authOptions);

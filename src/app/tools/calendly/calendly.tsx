@@ -1,4 +1,4 @@
-import { ItemCard } from '@/app/ToolSelectorClient';
+import { ItemCard } from '@/app/ToolSelector';
 import { useEffect, useState } from 'react';
 
 interface CalendlyEvent {
@@ -9,6 +9,9 @@ interface CalendlyEvent {
     invitees_counter: {
         total: number;
     };
+    attendees: {
+        email: string;
+    }[];
 }
 
 export function CalendlyEventsToolComponent() {
@@ -17,14 +20,11 @@ export function CalendlyEventsToolComponent() {
 
     function getPostMessageFromEvent(event: CalendlyEvent) {
         return {
-            id: 'calendly',
+            id: 'email',
             publicParams: {},
             privateParams: {
-                eventUri: event.uri,
-                eventName: event.name,
-                startTime: event.start_time,
-                endTime: event.end_time,
-                inviteeCount: event.invitees_counter.total,
+                ids: event.attendees.map((attendee) => attendee.email),
+                usernames: [],
             },
         };
     }
@@ -76,7 +76,9 @@ export function CalendlyEventsToolComponent() {
                             ).toLocaleString()} - ${new Date(
                                 event.end_time
                             ).toLocaleString()}`}
-                            description={`Invitees: ${event.invitees_counter.total}`}
+                            emails={event.attendees.map(
+                                (attendee) => attendee.email
+                            )}
                             onSelect={() => {
                                 if (!window.opener) {
                                     alert(

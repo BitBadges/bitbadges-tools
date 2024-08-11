@@ -1,20 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { ReposToolComponent } from './tools/github/privateRepos';
 import { SessionProvider } from 'next-auth/react';
 import { CalendarAttendeesToolComponent } from './tools/google/calendarAttendees';
 import { CalendlyEventsToolComponent } from './tools/calendly/calendly';
-import { MailchimpListsToolComponent } from './tools/mailchimp/mailchimp';
+import { StravaActivitiesToolComponent } from './tools/strava/strava';
 
 const tools = [
-    {
-        id: 'github',
-        name: 'GitHub Repositories',
-        description: 'View your private GitHub repositories',
-        icon: '📚',
-        provider: 'github',
-    },
     {
         id: 'google',
         name: 'Google Calendar',
@@ -30,11 +22,11 @@ const tools = [
         provider: 'calendly',
     },
     {
-        id: 'mailchimp',
-        name: 'Mailchimp Lists',
-        description: 'View your Mailchimp email lists',
-        icon: '📧',
-        provider: 'mailchimp',
+        id: 'strava',
+        name: 'Strava Activities',
+        description: 'View your Strava activities',
+        icon: '🏃‍♂️',
+        provider: 'strava',
     },
 ];
 
@@ -83,16 +75,11 @@ export default function ToolSelectorClient({ provider }: { provider: string }) {
                     </button>
                 )}
 
-                {selectedTool === 'github' && <ReposToolComponent />}
-
                 {selectedTool === 'google' && (
                     <CalendarAttendeesToolComponent />
                 )}
-
                 {selectedTool === 'calendly' && <CalendlyEventsToolComponent />}
-                {selectedTool === 'mailchimp' && (
-                    <MailchimpListsToolComponent />
-                )}
+                {selectedTool === 'strava' && <StravaActivitiesToolComponent />}
             </SessionProvider>
         </div>
     );
