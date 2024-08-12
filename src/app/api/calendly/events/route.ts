@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { decrypt } from '../../oauth/encryption';
+import { FRONTEND_BASE_URL } from '@/constants';
 
 const CALENDLY_CLIENT_ID = process.env.CALENDLY_CLIENT_ID;
 const REDIRECT_URI = `${FRONTEND_BASE_URL}/api/oauth/calendly/callback`;

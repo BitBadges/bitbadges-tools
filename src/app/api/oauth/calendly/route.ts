@@ -1,3 +1,4 @@
+import { FRONTEND_BASE_URL } from '@/constants';
 import { NextResponse } from 'next/server';
 
 const CALENDLY_CLIENT_ID = process.env.CALENDLY_CLIENT_ID;
