@@ -54,7 +54,7 @@ const authOptions = {
             //Google Calendar - read access to calendar
             authorization: {
                 params: {
-                    scope: 'openid email profile https://www.googleapis.com/auth/calendar',
+                    scope: 'openid email profile https://www.googleapis.com/auth/calendar.readonly',
                 },
             },
         }),
