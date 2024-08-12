@@ -1,4 +1,4 @@
-import { auth, manualProviders, providers } from '@/auth';
+import { getAuthStatus, manualProviders, providers } from '@/auth';
 import { DefaultSession } from 'next-auth';
 import { SignInButton, SignOut } from './SignInsServer';
 import {
@@ -14,25 +14,6 @@ declare module 'next-auth' {
         accessToken?: string;
         provider?: string;
     }
-}
-
-export async function getAuthStatus() {
-    const session = await auth();
-    const cookieStore = cookies();
-
-    const calendlyToken = cookieStore.get('calendly_token')?.value;
-
-    return {
-        isAuthenticated: !!session || !!calendlyToken,
-        provider: session?.provider || (calendlyToken ? 'calendly' : null),
-        user:
-            session?.user ||
-            (calendlyToken
-                ? {
-                      name: 'Calendly User',
-                  }
-                : null),
-    };
 }
 
 export default async function Home() {

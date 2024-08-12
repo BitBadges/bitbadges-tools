@@ -1,6 +1,7 @@
 import NextAuth, { Session } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import StravaProvider from 'next-auth/providers/strava';
+import { cookies } from 'next/headers';
 
 //Manual providers are manually implemented instead of using next-auth's built-in providers
 export const manualProviders = ['calendly'];
@@ -74,3 +75,22 @@ const authOptions = {
 };
 
 export const { handlers, signIn, signOut, auth } = NextAuth(authOptions);
+
+export async function getAuthStatus() {
+    const session = await auth();
+    const cookieStore = cookies();
+
+    const calendlyToken = cookieStore.get('calendly_token')?.value;
+
+    return {
+        isAuthenticated: !!session || !!calendlyToken,
+        provider: session?.provider || (calendlyToken ? 'calendly' : null),
+        user:
+            session?.user ||
+            (calendlyToken
+                ? {
+                      name: 'Calendly User',
+                  }
+                : null),
+    };
+}
