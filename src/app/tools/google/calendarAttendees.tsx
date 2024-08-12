@@ -18,7 +18,9 @@ export function CalendarAttendeesToolComponent({}: {}) {
     function getPostMessageFromEvent(event: calendar_v3.Schema$Event) {
         return {
             pluginId: 'email',
-            publicParams: {},
+            publicParams: {
+                maxUsesPerUser: 1,
+            },
             privateParams: {
                 ids: event.attendees?.map((attendee) => attendee.email) || [],
                 usernames: [],

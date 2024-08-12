@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { decrypt } from '../../oauth/encryption';
 
 const CALENDLY_CLIENT_ID = process.env.CALENDLY_CLIENT_ID;
-const REDIRECT_URI = 'http://localhost:3002/api/oauth/calendly/callback';
+const REDIRECT_URI = `${FRONTEND_BASE_URL}/api/oauth/calendly/callback`;
 
 export async function GET(request: Request) {
     const cookieStore = cookies();

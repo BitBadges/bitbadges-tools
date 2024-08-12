@@ -2,9 +2,13 @@ import NextAuth, { Session } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import StravaProvider from 'next-auth/providers/strava';
 import { cookies } from 'next/headers';
+import { FRONTEND_BASE_URL } from './constants';
+import { Provider } from 'next-auth/providers';
 
 //Manual providers are manually implemented instead of using next-auth's built-in providers
 export const manualProviders = ['calendly'];
+
+const isLocalDevelopment = FRONTEND_BASE_URL.includes('localhost');
 
 //Active providers to be displayed on the login page
 export const providers: {
@@ -19,19 +23,28 @@ export const providers: {
         description: 'Sign in with your Google account',
         logo: 'https://zapier-images.imgix.net/storage/services/5e4971d60629bca0548ded987b9ddc06.png?auto=format&ixlib=react-9.8.1&fit=crop&q=50&w=60&h=60&dpr=1',
     },
-    {
-        id: 'calendly',
-        name: 'Calendly',
-        description: 'Sign in with your Calendly account',
-        logo: 'https://zapier-images.imgix.net/storage/services/33464c48a26a29dd29977ffb16bcca53.png?auto=format&ixlib=react-9.8.1&fit=crop&q=50&w=60&h=60&dpr=1',
-    },
-    // {
-    //     id: 'strava',
-    //     name: 'Strava',
-    //     description: 'Sign in with your Strava account',
-    //     logo: 'https://zapier-images.imgix.net/storage/developer/0bff80269156ba892a084e0fcf8eb841.png?auto=format&ixlib=react-9.8.1&fit=crop&q=50&w=60&h=60&dpr=1',
-    // },
-];
+    isLocalDevelopment
+        ? {
+              id: 'calendly',
+              name: 'Calendly',
+              description: 'Sign in with your Calendly account',
+              logo: 'https://zapier-images.imgix.net/storage/services/33464c48a26a29dd29977ffb16bcca53.png?auto=format&ixlib=react-9.8.1&fit=crop&q=50&w=60&h=60&dpr=1',
+          }
+        : undefined,
+    isLocalDevelopment
+        ? {
+              id: 'strava',
+              name: 'Strava',
+              description: 'Sign in with your Strava account',
+              logo: 'https://zapier-images.imgix.net/storage/developer/0bff80269156ba892a084e0fcf8eb841.png?auto=format&ixlib=react-9.8.1&fit=crop&q=50&w=60&h=60&dpr=1',
+          }
+        : undefined,
+].filter(Boolean) as {
+    id: string;
+    name: string;
+    description: string;
+    logo: string;
+}[];
 
 const authOptions = {
     providers: [
@@ -45,16 +58,18 @@ const authOptions = {
                 },
             },
         }),
-        StravaProvider({
-            clientId: process.env.STRAVA_CLIENT_ID!,
-            clientSecret: process.env.STRAVA_CLIENT_SECRET!,
-            authorization: {
-                params: {
-                    scope: 'activity:read',
-                },
-            },
-        }),
-    ],
+        isLocalDevelopment
+            ? StravaProvider({
+                  clientId: process.env.STRAVA_CLIENT_ID!,
+                  clientSecret: process.env.STRAVA_CLIENT_SECRET!,
+                  authorization: {
+                      params: {
+                          scope: 'activity:read',
+                      },
+                  },
+              })
+            : undefined,
+    ].filter(Boolean) as Provider[],
     callbacks: {
         async jwt({ token, account }: { token: any; account: any }) {
             // Persist the OAuth access_token to the token right after signin

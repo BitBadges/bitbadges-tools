@@ -1,10 +1,11 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { encrypt } from '../../encryption';
+import { FRONTEND_BASE_URL } from '@/constants';
 
 const CALENDLY_CLIENT_ID = process.env.CALENDLY_CLIENT_ID || '';
 const CALENDLY_CLIENT_SECRET = process.env.CALENDLY_CLIENT_SECRET || '';
-const REDIRECT_URI = 'http://localhost:3002/api/oauth/calendly/callback';
+const REDIRECT_URI = `${FRONTEND_BASE_URL}/api/oauth/calendly/callback`;
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -53,5 +54,5 @@ export async function GET(request: Request) {
         path: '/',
     });
 
-    return NextResponse.redirect('http://localhost:3002');
+    return NextResponse.redirect(FRONTEND_BASE_URL);
 }

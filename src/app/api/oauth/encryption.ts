@@ -1,40 +1,28 @@
-// import { encrypt, decrypt } from './encryption'; // Implement these functions
+import crypto from 'crypto';
 
 const secretKey = process.env.AUTH_SECRET || '';
 
-export const encrypt = async (data: string) => {
-    // const encodedData = new TextEncoder().encode(data);
-    // const key = await crypto.subtle.importKey(
-    //     'raw',
-    //     Buffer.from(secretKey),
-    //     { name: 'AES-GCM' },
-    //     false,
-    //     ['encrypt']
-    // );
-    // const iv = crypto.getRandomValues(new Uint8Array(12));
-    // const encryptedData = await crypto.subtle.encrypt(
-    //     { name: 'AES-GCM', iv: iv },
-    //     key,
-    //     encodedData
-    // );
-    // return { encryptedData, iv };
-    return data;
+export const encrypt = async (data: string): Promise<string> => {
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(
+        'aes-256-cbc',
+        Buffer.from(secretKey),
+        iv
+    );
+    let encrypted = cipher.update(data, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return iv.toString('hex') + ':' + encrypted;
 };
 
-export const decrypt = async (data: string) => {
-    // const encodedData = new TextEncoder().encode(data);
-    // const key = await crypto.subtle.importKey(
-    //     'raw',
-    //     Buffer.from(secretKey),
-    //     { name: 'AES-GCM' },
-    //     false,
-    //     ['decrypt']
-    // );
-    // const decryptedData = await crypto.subtle.decrypt(
-    //     { name: 'AES-GCM', iv: Buffer.from(secretKey) },
-    //     key,
-    //     encodedData
-    // );
-    // return new TextDecoder().decode(decryptedData);
-    return data;
+export const decrypt = async (data: string): Promise<string> => {
+    const [ivHex, encryptedData] = data.split(':');
+    const iv = Buffer.from(ivHex, 'hex');
+    const decipher = crypto.createDecipheriv(
+        'aes-256-cbc',
+        Buffer.from(secretKey),
+        iv
+    );
+    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
 };
