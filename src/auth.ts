@@ -1,4 +1,4 @@
-import NextAuth, { Session } from 'next-auth';
+import NextAuth, { NextAuthConfig, Session } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import StravaProvider from 'next-auth/providers/strava';
 import { cookies } from 'next/headers';
@@ -46,7 +46,8 @@ export const providers: {
     logo: string;
 }[];
 
-const authOptions = {
+const authOptions: NextAuthConfig = {
+    trustHost: true,
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_ID,

@@ -98,7 +98,7 @@ export function StravaActivitiesToolComponent({}: {}) {
                             onSelect={() => {
                                 if (!window.opener) {
                                     alert(
-                                        'This tool must be opened via a redirect from the BitBadges site'
+                                        'To auto configure a plugin, this tool must be opened via a redirect from the BitBadges site.'
                                     );
                                     return;
                                 }
