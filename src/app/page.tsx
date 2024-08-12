@@ -26,9 +26,6 @@ export default async function Home() {
             <div className="w-full max-w-md">
                 {!session?.user ? (
                     <>
-                        <h1 className="text-2xl font-bold mb-6 text-center">
-                            Sign In
-                        </h1>
                         {providers.map((provider) =>
                             manualProviders.includes(provider.id) ? (
                                 <SignInButtonClient
