@@ -89,6 +89,8 @@ const authOptions: NextAuthConfig = {
             return session;
         },
         async redirect({ url, baseUrl }) {
+            console.log('redirect', url, baseUrl);
+            baseUrl = FRONTEND_BASE_URL;
             // Allows relative callback URLs
             if (url.startsWith('/')) return `${baseUrl}${url}`;
             // Allows callback URLs on the same origin
