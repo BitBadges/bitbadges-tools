@@ -98,7 +98,6 @@ const authOptions: NextAuthConfig = {
             return baseUrl;
         },
     },
-    debug: true,
 };
 
 export const { handlers, signIn, signOut, auth } = NextAuth(authOptions);
