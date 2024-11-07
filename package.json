@@ -14,7 +14,7 @@
     "googleapis": "^140.0.1",
     "net": "^1.0.2",
     "next": "14.2.12",
-    "next-auth": "^5.0.0-beta.20",
+    "next-auth": "^5.0.0-beta.25",
     "react": "^18",
     "react-dom": "^18",
     "tls": "^0.0.1"
