@@ -13,7 +13,7 @@
     "fs": "^0.0.1-security",
     "googleapis": "^140.0.1",
     "net": "^1.0.2",
-    "next": "14.2.32",
+    "next": "14.2.35",
     "next-auth": "^5.0.0-beta.30",
     "react": "^18",
     "react-dom": "^18",
